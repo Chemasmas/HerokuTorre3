@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.nebulahelix.torre3.herokutorre3.MyResourceTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 13.278 sec

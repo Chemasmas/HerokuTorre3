@@ -1,0 +1,1 @@
+web: java -cp target/classes:target/dependency/* com.nebulahelix.torre3.herokutorre3.heroku.Main
