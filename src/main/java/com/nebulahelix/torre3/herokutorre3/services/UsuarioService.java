@@ -11,7 +11,7 @@ import javax.ws.rs.core.MediaType;
  * @author Chemasmas
  */
 @Path("/usuario")
-public class Usuario {
+public class UsuarioService {
 
     /*
     https://torre3uam.herokuapp.com/usuario/login
@@ -38,6 +38,7 @@ public class Usuario {
                         @FormParam("servicios") String servicios,
                         @FormParam("conocimientos") String conocimientos,
                         @FormParam("intereses") String intereses,
+                        @FormParam("correo") String correo,
                         @FormParam("celular") String celular,
                         @FormParam("proyectosPrevios") String proyectosPrevios,
                         @FormParam("proyectosActuales") String proyectosActuales)
@@ -48,6 +49,7 @@ public class Usuario {
         System.out.println("Servicios: "+servicios);
         System.out.println("Conocimientos: "+conocimientos);
         System.out.println("Intereses: "+intereses);
+        System.out.println("Correo: "+correo);
         System.out.println("Celular: "+celular);
         System.out.println("P.Previos: "+proyectosPrevios);
         System.out.println("P.Actuales: "+proyectosActuales);
