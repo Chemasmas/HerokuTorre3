@@ -25,4 +25,25 @@ public class Usuario {
         System.out.println("Alguien se Conecto con "+usr+" y "+pwd);
         return "{usr :'"+usr+"' , pwd: '"+pwd+"' }";
     }
+    
+    /*
+    https://torre3uam.herokuapp.com/usuario/login
+    */
+    @POST
+    @Path("/register")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String Registrar(@FormParam("nombre") String nombre,
+                        @FormParam("matricula") String matricula,
+                        @FormParam("habilidades") String habilidades,
+                        @FormParam("servicios") String servicios,
+                        @FormParam("conocimientos") String conocimientos,
+                        @FormParam("intereses") String intereses,
+                        @FormParam("celular") String celular,
+                        @FormParam("proyectosPrevios") String proyectosPrevios,
+                        @FormParam("proyectosActuales") String proyectosActuales)
+    {
+        
+        System.out.println(matricula+" "+nombre);
+        return "Guardando";
+    }
 }
