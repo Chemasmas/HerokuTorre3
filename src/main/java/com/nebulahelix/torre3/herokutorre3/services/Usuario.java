@@ -27,7 +27,7 @@ public class Usuario {
     }
     
     /*
-    https://torre3uam.herokuapp.com/usuario/login
+    https://torre3uam.herokuapp.com/usuario/register
     */
     @POST
     @Path("/register")
@@ -42,8 +42,15 @@ public class Usuario {
                         @FormParam("proyectosPrevios") String proyectosPrevios,
                         @FormParam("proyectosActuales") String proyectosActuales)
     {
-        
-        System.out.println(matricula+" "+nombre);
+        System.out.println("Nombre: "+nombre);
+        System.out.println("Matricula: "+matricula);
+        System.out.println("Habilidades: "+habilidades);
+        System.out.println("Servicios: "+servicios);
+        System.out.println("Conocimientos: "+conocimientos);
+        System.out.println("Intereses: "+intereses);
+        System.out.println("Celular: "+celular);
+        System.out.println("P.Previos: "+proyectosPrevios);
+        System.out.println("P.Actuales: "+proyectosActuales);
         return "Guardando";
     }
-}
+    }
