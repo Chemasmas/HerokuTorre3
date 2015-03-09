@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="1" failures="0" name="com.nebulahelix.torre3.herokutorre3.MyResourceTest" time="13.275" errors="0" skipped="0">
+<testsuite tests="1" failures="0" name="com.nebulahelix.torre3.herokutorre3.MyResourceTest" time="6.573" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk1.8.0\jre\bin"/>
@@ -29,7 +29,7 @@
     <property name="maven.ext.class.path" value="C:\Users\Adry\AppData\Roaming\NetBeans\8.0\maven-nblib\netbeans-eventspy.jar"/>
     <property name="classworlds.conf" value="C:\Program Files\NetBeans 8.0\java\maven\bin\m2.conf"/>
     <property name="sun.jnu.encoding" value="Cp1252"/>
-    <property name="java.library.path" value="C:\Program Files\Java\jdk1.8.0\bin;C:\windows\Sun\Java\bin;C:\windows\system32;C:\windows;C:\oraclexe\app\oracle\product\11.2.0\server\bin;;C:\ProgramData\Oracle\Java\javapath;C:\Program Files\NVIDIA Corporation\PhysX\Common;C:\Program Files\Common Files\Microsoft Shared\Windows Live;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\Windows Live\Shared;C:\Program Files\Internet Explorer;C:\Program Files\Java\jdk1.7.0_51\bin;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\Program Files\Microsoft ASP.NET\ASP.NET Web Pages\v1.0\;C:\Qt\Qt5.2.1\5.2.1\msvc2012\bin;C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib;C:\Program Files\sbt\;C:\Program Files\MiKTeX 2.9\miktex\bin\;C:\Program Files\GtkSharp\2.12\bin;C:\Program Files\GNU\GnuPG\pub;C:\Program Files\nodejs\;C:\Program Files\CMake\bin;C:\OpenCV\opencv\build\x86\vc12\bin;C:\OpenCV\NDK\NDK;C:\Users\Adry\AppData\Local\Android\android-sdk\platform-tools;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Heroku\bin;C:\Program Files\git\cmd;C:\Program Files\Microsoft SQL Server\1;C:\windows\System32\WindowsPowerShell\v1.0\;C:\Users\Adry\ANT\bin;C:\Ruby21\bin;C:\Activator;C:\Users\Adry\AppData\Roaming\npm;."/>
+    <property name="java.library.path" value="C:\Program Files\Java\jdk1.8.0\bin;C:\windows\Sun\Java\bin;C:\windows\system32;C:\windows;C:\oraclexe\app\oracle\product\11.2.0\server\bin;;C:\ProgramData\Oracle\Java\javapath;C:\Program Files\NVIDIA Corporation\PhysX\Common;C:\Program Files\Common Files\Microsoft Shared\Windows Live;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\Windows Live\Shared;C:\Program Files\Internet Explorer;C:\Program Files\Java\jdk1.7.0_51\bin;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\Program Files\Microsoft ASP.NET\ASP.NET Web Pages\v1.0\;C:\Qt\Qt5.2.1\5.2.1\msvc2012\bin;C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib;C:\Program Files\sbt\;C:\Program Files\MiKTeX 2.9\miktex\bin\;C:\Program Files\GtkSharp\2.12\bin;C:\Program Files\GNU\GnuPG\pub;C:\Program Files\nodejs\;C:\Program Files\CMake\bin;C:\OpenCV\opencv\build\x86\vc12\bin;C:\OpenCV\NDK\NDK;C:\Users\Adry\AppData\Local\Android\android-sdk\platform-tools;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Heroku\bin;C:\Program Files\git\cmd;C:\Program Files\Microsoft SQL Server\1;C:\windows\System32\WindowsPowerShell\v1.0\;C:\Users\Adry\ANT\bin;C:\Ruby21\bin;C:\Activator;C:\Maven\bin;C:\Program Files\PostgreSQL\9.4\bin;C:\Users\Adry\AppData\Roaming\npm;."/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.class.version" value="52.0"/>
     <property name="sun.management.compiler" value="HotSpot Client Compiler"/>
@@ -61,5 +61,5 @@
     <property name="sun.desktop" value="windows"/>
     <property name="sun.cpu.isalist" value="pentium_pro+mmx pentium_pro pentium+mmx pentium i486 i386 i86"/>
   </properties>
-  <testcase classname="com.nebulahelix.torre3.herokutorre3.MyResourceTest" name="testGetIt" time="11.777"/>
+  <testcase classname="com.nebulahelix.torre3.herokutorre3.MyResourceTest" name="testGetIt" time="5.517"/>
 </testsuite>
