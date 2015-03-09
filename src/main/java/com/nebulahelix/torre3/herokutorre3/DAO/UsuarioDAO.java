@@ -86,6 +86,7 @@ public class UsuarioDAO {
                 addProyecto.close();
             }
             
+            /*
             CallableStatement setAvatar=null;
             String setAvatarS="{call setAvatar(?,?,?,?,?)}";
             
@@ -102,7 +103,7 @@ public class UsuarioDAO {
             setAvatar.execute();
             
             setAvatar.close();
-            
+            */
             return u.getPassword();
         } catch (SQLException ex) {
             Logger.getLogger(UsuarioDAO.class.getName()).log(Level.SEVERE, null, ex);
