@@ -23,6 +23,13 @@ import java.util.StringTokenizer;
 @Path("/usuario")
 public class UsuarioService {
 
+    @POST
+    @Path("/test")
+    public String test()
+    {
+        return "Si llega?";
+    }
+    
     /*
     https://torre3uam.herokuapp.com/usuario/login
     */
