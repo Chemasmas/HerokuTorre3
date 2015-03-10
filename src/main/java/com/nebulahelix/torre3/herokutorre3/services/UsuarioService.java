@@ -20,7 +20,7 @@ import java.util.StringTokenizer;
  *
  * @author Chemasmas
  */
-@Path("/usuario")
+@Path("/api/usuario")
 public class UsuarioService {
 
     /*
