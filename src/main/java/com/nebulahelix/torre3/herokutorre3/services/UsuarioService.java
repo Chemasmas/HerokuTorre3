@@ -30,6 +30,7 @@ public class UsuarioService {
     @Path("/test")
     public String test(@FormParam("parametro") String param)
     {
+        System.out.println("LLamando a TEST "+param);
         return "Si llega?"+param;
     }
     
