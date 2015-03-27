@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd">
+<hibernate-reverse-engineering>
+  <schema-selection match-catalog="Torre3_PIS2_DB"/>
+  <table-filter match-name="usuarios"/>
+  <table-filter match-name="proyectos"/>
+  <table-filter match-name="skills"/>
+  <table-filter match-name="avatar"/>
+  <table-filter match-name="anuncios"/>
+</hibernate-reverse-engineering>

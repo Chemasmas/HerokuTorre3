@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 17/03/2015 02:07:06 PM by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="com.nebulahelix.torre3.entity.Usuarios" table="usuarios" catalog="torre3_pis2_db" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="usrName" type="string">
+            <column name="usrName" length="45" not-null="true" />
+        </property>
+        <property name="usrPass" type="string">
+            <column name="usrPass" length="70" not-null="true" />
+        </property>
+        <property name="nombreCompleto" type="string">
+            <column name="nombreCompleto" length="45" not-null="true" />
+        </property>
+        <property name="carrera" type="string">
+            <column name="carrera" length="45" not-null="true" />
+        </property>
+        <property name="matricula" type="string">
+            <column name="matricula" length="12" not-null="true" />
+        </property>
+        <property name="telCelular" type="string">
+            <column name="telCelular" length="10" not-null="true" />
+        </property>
+        <property name="token" type="string">
+            <column name="token" length="45" not-null="true" />
+        </property>
+        <set name="proyectoses" table="proyectos" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Usuarios_id" not-null="true" />
+            </key>
+            <one-to-many class="com.nebulahelix.torre3.entity.Proyectos" />
+        </set>
+        <set name="skillses" table="skills" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Usuarios_id" not-null="true" />
+            </key>
+            <one-to-many class="com.nebulahelix.torre3.entity.Skills" />
+        </set>
+        <set name="avatars" table="avatar" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Usuarios_id" not-null="true" />
+            </key>
+            <one-to-many class="com.nebulahelix.torre3.entity.Avatar" />
+        </set>
+        <set name="anuncioses" table="anuncios" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Usuarios_id" not-null="true" />
+            </key>
+            <one-to-many class="com.nebulahelix.torre3.entity.Anuncios" />
+        </set>
+    </class>
+</hibernate-mapping>

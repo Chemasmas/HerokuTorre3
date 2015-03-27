@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 17/03/2015 02:07:06 PM by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="com.nebulahelix.torre3.entity.Anuncios" table="anuncios" catalog="torre3_pis2_db" optimistic-lock="version">
+        <id name="idAnuncio" type="java.lang.Integer">
+            <column name="IdAnuncio" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="usuarios" class="com.nebulahelix.torre3.entity.Usuarios" fetch="select">
+            <column name="Usuarios_id" not-null="true" />
+        </many-to-one>
+        <property name="titulo" type="string">
+            <column name="titulo" length="45" not-null="true" />
+        </property>
+        <property name="fechaPublicacion" type="date">
+            <column name="fechaPublicacion" length="10" not-null="true" />
+        </property>
+        <property name="fechaExpiracion" type="date">
+            <column name="fechaExpiracion" length="10" not-null="true" />
+        </property>
+        <property name="contenido" type="string">
+            <column name="contenido" not-null="true" />
+        </property>
+        <property name="seccion" type="int">
+            <column name="seccion" not-null="true" />
+        </property>
+        <property name="piso" type="int">
+            <column name="piso" not-null="true" />
+        </property>
+        <property name="bloque" type="int">
+            <column name="bloque" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>
