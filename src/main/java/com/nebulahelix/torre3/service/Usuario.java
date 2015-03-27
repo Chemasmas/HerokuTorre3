@@ -68,6 +68,7 @@ public class Usuario {
             Token t=new Token();
             t.setToken(u.getToken());
             sesion.update(u);
+            sesion.getTransaction().commit();
             sesion.close();
             return Response.status(200).entity(t).build();
         }
