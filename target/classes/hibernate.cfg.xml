@@ -4,13 +4,33 @@
   <session-factory>
     <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
     <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-    <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/Torre3_PIS2_DB?zeroDateTimeBehavior=convertToNull</property>
+    <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/Torre3_PIS2_DB</property>
     <property name="hibernate.connection.username">torre3Admin</property>
     <property name="hibernate.connection.password">Libio#105R</property>
+    <property name="show_sql">true</property>
+    
+    <!--Usaremos C3P0 para manejar el pool de conexiones-->
+    <!--<property name="connection.pool_size">20</property>-->
+    <property name="hibernate.c3p0.min_size">5</property>
+    <property name="hibernate.c3p0.max_size">50</property>
+    <property name="hibernate.c3p0.timeout">60</property>
+    <property name="hibernate.c3p0.max_statements">10</property>
+    
+    
+    
+
+
+
+    
     <mapping resource="com/nebulahelix/torre3/entity/Usuarios.hbm.xml"/>
     <mapping resource="com/nebulahelix/torre3/entity/Proyectos.hbm.xml"/>
     <mapping resource="com/nebulahelix/torre3/entity/Avatar.hbm.xml"/>
     <mapping resource="com/nebulahelix/torre3/entity/Anuncios.hbm.xml"/>
     <mapping resource="com/nebulahelix/torre3/entity/Skills.hbm.xml"/>
+    
+    <!-- Drop and re-create the database schema on startup 
+    <property name="hbm2ddl.auto">update</property>
+    <mapping resource="org/hibernate/tutorial/domain/Event.hbm.xml"/>
+    -->
   </session-factory>
 </hibernate-configuration>
