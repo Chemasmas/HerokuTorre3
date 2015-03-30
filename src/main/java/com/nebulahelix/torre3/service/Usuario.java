@@ -4,6 +4,7 @@ import com.nebulahelix.torre3.entity.Avatar;
 import com.nebulahelix.torre3.entity.Proyectos;
 import com.nebulahelix.torre3.entity.Skills;
 import com.nebulahelix.torre3.entity.Usuarios;
+import com.nebulahelix.torre3.entity.json.Casilla;
 import com.nebulahelix.torre3.entity.json.Notificacion;
 import com.nebulahelix.torre3.entity.json.Tipo;
 import com.nebulahelix.torre3.entity.json.Token;
@@ -26,6 +27,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import java.util.logging.Logger;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.PathParam;
 
 
@@ -102,6 +104,7 @@ public class Usuario {
         try
         {
             sesion=HibernateUtil2.getSessionFactory().openSession();
+            sesion.beginTransaction();
             Query query=sesion.createQuery("FROM Usuarios where usrName= :name AND usrPass = :pass");
             query.setParameter("name", usr);
             query.setParameter("pass", Encriptado.SHA256(pwd));
@@ -118,6 +121,10 @@ public class Usuario {
                 sesion.update(u);
                 sesion.getTransaction().commit();
                 sesion.close();
+                log.info("Colocaremos Al usuario en El mapa");
+                //Torre3.mundo[0][0][0]=new Casilla();
+                //Torre3.mundo[0][0][0].getUsuarios().add(u.getId());
+                Torre3.addUsr(0, 0, 0, u.getId());
                 log.info("Solicitud procesada exitosamente");
                 return Response.ok(t).build();
             }
@@ -137,6 +144,7 @@ public class Usuario {
         {
             log.severe("Algo salio mal");
             log.severe(e.getMessage());
+            e.printStackTrace();
             log.severe("--------------------------------------------------------");
                      
             Notificacion n=new Notificacion();
@@ -212,7 +220,11 @@ public class Usuario {
                         @FormParam("intereses") String intereses,
                         @FormParam("celular") String celular,
                         @FormParam("proyectosPrevios") String proyectosPrevios,
-                        @FormParam("proyectosActuales") String proyectosActuales)//,
+                        @FormParam("proyectosActuales") String proyectosActuales,
+                        @DefaultValue("1") @FormParam("piernas") int piernas,
+                        @DefaultValue("1") @FormParam("brazos") int brazos,
+                        @DefaultValue("1") @FormParam("cabeza") int cabeza,
+                        @DefaultValue("1") @FormParam("torso") int torso)//,
                         //@FormParam("uuid") String uuid)
     {
         
@@ -334,7 +346,14 @@ public class Usuario {
                 for (Proyectos proyecto :(Set<Proyectos>)u.getProyectoses()) {
                     sesion.save(proyecto);
                 }
-        
+                
+                Avatar av=new Avatar();
+                av.setBrazos(brazos);
+                av.setCabeza(cabeza);
+                av.setPiernas(piernas);
+                av.setTorso(torso);
+                av.setUsuarios(u);
+                sesion.save(av);
                 
                 sesion.getTransaction().commit();
         
@@ -424,35 +443,31 @@ public class Usuario {
                                   @FormParam("nombre") String nombre,
                                   @FormParam("matricula") String matricula,
                                   @FormParam("carrera") String carrera,
-                                  @FormParam("celular") String celular)
+                                  @FormParam("celular") String celular,
+                                  @FormParam("usr") String usr,
+                                  @FormParam("token") String token)
     {
         
         log.info("Editando Usuario");
         Session sesion;
-        try
-        {
+        try{
             sesion=HibernateUtil2.getSessionFactory().openSession();
         
             sesion.beginTransaction();
             
-            Query query=sesion.createQuery("FROM Usuarios where id= :idU");
+            sesion=HibernateUtil2.getSessionFactory().openSession();
+            Query query=sesion.createQuery("FROM Usuarios where usrName= :name AND token = :token AND id =: idU");
+            query.setParameter("name", usr);
+            query.setParameter("token", token);
             query.setParameter("idU", id);
-
-            log.info(query.getQueryString());
             
-            List<Usuarios> res=query.list();
-            if(res.isEmpty())
+            log.info(query.getQueryString());
+            List res=query.list();
+            if(!res.isEmpty())
             {
-                //Algo fallo
-                Notificacion n=new Notificacion();
-                n.setTipo(Tipo.Fallo);
-                n.setNotificacion("Ese ID no es valido");
-                return Response.ok(n).build();
-            }
-            else
-            {
-                Usuarios u=res.get(0);
-                // Solo modifico los valores que no estan en blanco
+                log.info("Usuario Encontrado");
+                Usuarios u= (Usuarios)res.get(0);
+                
                 if(!nombre.isEmpty())
                     u.setNombreCompleto(nombre);
                 if(!matricula.isEmpty())
@@ -463,6 +478,7 @@ public class Usuario {
                     u.setTelCelular(celular);
                 
                 sesion.update(u);
+                sesion.getTransaction().commit();
                 
                 Notificacion n=new Notificacion();
                 n.setTipo(Tipo.Exito);
@@ -470,8 +486,15 @@ public class Usuario {
                 
                 return Response.ok(n).build();
             }
-            
-            
+            else
+            {
+                log.info("Usuario no encontrado");
+                Notificacion m=new Notificacion();
+                m.setTipo(Tipo.Fallo);
+                m.setNotificacion("No estas autorizado de realizar ese cambio");
+
+                return Response.ok(m).build();
+            }
         }catch(Exception e)
         {
             log.severe("Fallo de hibernate");
@@ -552,8 +575,94 @@ public class Usuario {
             return Response.ok(n).build();
         }
     }
+    
+    @POST
+    @Path("/{id}/avatar/edit")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response proto(@PathParam("id") long id,
+                        @DefaultValue("1") @FormParam("piernas") int piernas,
+                        @DefaultValue("1") @FormParam("brazos") int brazos,
+                        @DefaultValue("1") @FormParam("cabeza") int cabeza,
+                        @DefaultValue("1") @FormParam("torso") int torso,
+                        @FormParam("usr") String usr,
+                        @FormParam("token") String token)
+    {
+        log.info("Return Avatar");
+        Session sesion;
+        try
+        {
+            sesion=HibernateUtil2.getSessionFactory().openSession();
+            Query q1=sesion.createQuery("FROM Usuarios where usrName= :name AND token = :token AND id =: idU");
+            q1.setParameter("name", usr);
+            q1.setParameter("token", token);
+            q1.setParameter("idU", id);
+            
+            List usuarios=q1.list();
+            if(usuarios.isEmpty())
+            {
+                log.warning("No se encontro ese usuario");
+                Notificacion n= new Notificacion();
+                n.setTipo(Tipo.Fallo);
+                n.setNotificacion("No tienes autorizacion para hacer ese cambio");
+                
+                return Response.ok(n).build();
+            }
+            else
+            {
+                Usuarios u=(Usuarios)usuarios.get(0);
+                Query query=sesion.createQuery("FROM Avatar where usuarios = :usr");
+                query.setParameter("usr", u);
+                
+                List avatar=query.list();
+                
+                if(avatar.isEmpty())
+                {
+                    
+                    log.warning("No se encontro ese Avatar");
+                    Notificacion n= new Notificacion();
+                    n.setTipo(Tipo.Fallo);
+                    n.setNotificacion("Fallo encontrando el avatar de ese usuario");
+                
+                    return Response.ok(n).build();
+                }
+                else
+                {
+                    log.info("Avatar encontrado!");
+                    
+                    Avatar av=(Avatar)avatar.get(0);
+                    av.setBrazos(brazos);
+                    av.setCabeza(cabeza);
+                    av.setPiernas(piernas);
+                    av.setTorso(torso);
+                    
+                    sesion.update(av);
+                    sesion.getTransaction().commit();
+                    
+                    Notificacion n=new Notificacion();
+                    n.setTipo(Tipo.Exito);
+                    n.setNotificacion("Usuario Actualizado");
+
+                    return Response.ok(n).build();
+                }
+            }
+            
+        }
+        catch(Exception e)
+        {
+            log.severe("Fallo de hibernate");
+                
+            Notificacion n=new Notificacion();
+            n.setTipo(Tipo.Fallo);
+            n.setNotificacion("No se realizo la operacion");
+            
+            return Response.ok(n).build();
+        }
+    }
 
     /*
+    sesion.getTransaction().commit();
+    
+    
     @GET
     @Path("/{id}/avatar")
     @Produces(MediaType.APPLICATION_JSON)
