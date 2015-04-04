@@ -1,7 +1,15 @@
 package com.nebulahelix.torre3.service;
 
+import com.nebulahelix.torre3.entity.Anuncios;
+import com.nebulahelix.torre3.entity.Avatar;
 import com.nebulahelix.torre3.entity.json.Casilla;
-import java.util.ArrayList;
+import com.nebulahelix.torre3.entity.json.Mensaje;
+import com.nebulahelix.torre3.entity.json.Notificacion;
+import com.nebulahelix.torre3.entity.json.Pasillo;
+import com.nebulahelix.torre3.entity.json.Segmento;
+import com.nebulahelix.torre3.entity.json.Tipo;
+import com.nebulahelix.torre3.entity.json.avatarJson;
+import com.nebulahelix.torre3.util.HibernateUtil2;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.inject.Singleton;
@@ -11,7 +19,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 
 /**
@@ -23,119 +32,159 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Singleton
 public class Torre3 {
     
-    public static Mundo mundo=new Mundo();
+    private static Segmento mundo;
+
+    private static void addAnuncio(Anuncios anuncio) {
+        
+        Mensaje m=new Mensaje();
+        m.setTitulo(anuncio.getTitulo());
+        m.setDetalle(anuncio.getContenido());
+        mundo.getPasillos().get(anuncio.getPiso()).getCasillas().get(anuncio.getBloque()).addAnuncio(m);
+    }
+    
+    private void iniciarMundo()
+    {
+        mundo=new Segmento();
+        
+        mundo.getPasillos().add(new Pasillo());
+        mundo.getPasillos().add(new Pasillo());
+        mundo.getPasillos().add(new Pasillo());
+        mundo.getPasillos().add(new Pasillo());
+        mundo.getPasillos().add(new Pasillo());
+        mundo.getPasillos().add(new Pasillo());
+        mundo.getPasillos().add(new Pasillo());
+        
+        //Anuncios
+        Session sesion=HibernateUtil2.getSessionFactory().openSession();
+        sesion.beginTransaction();
+        
+        Query anuncios=sesion.createQuery("from Anuncios where FechaExpiracion > current_date()");
+        
+        List<Anuncios> anuncio=anuncios.list();
+        for (Anuncios anuncio1 : anuncio) {
+            //La seccion siempre es uno
+            Torre3.addAnuncio(anuncio1);
+        }
+        
+    }
     
     static final Logger log=Logger.getLogger("Mundo");
     
-    public static void addUsr(int x,int y, int z,long id)
+    public static void addUsr(int y,int x,long id)
     {
-        mundo.getMundo().get(x).segmento.get(y).pasillo.get(z).getUsuarios().add(id);
+        try
+        {
+            
+            Session sesion=HibernateUtil2.getSessionFactory().openSession();
+            sesion.beginTransaction();
+
+            avatarJson aj=new avatarJson();
+
+            Query q=sesion.createQuery("select a from Usuarios as u , Avatar as a where u.id=a.usuarios.id and u.id= :id");
+            q.setParameter("id",id);
+            
+            List<Avatar> avatares=q.list();
+            if(avatares.isEmpty())
+            {
+                Notificacion n=new Notificacion();
+                n.setTipo(Tipo.Fallo);
+                n.setNotificacion("Id Invalido");
+            }
+            else
+            {
+                Casilla c = mundo.getPasillos().get(y).getCasillas().get(x);
+                
+                Avatar av=avatares.get(0);
+                aj.setBrazos(av.getBrazos());
+                aj.setCabeza(av.getCabeza());
+                //Es el id de avatar
+                aj.setId(av.getUsuarios().getId());
+                aj.setPiernas(av.getPiernas());
+                aj.setTorso(av.getTorso());
+                
+                c.addUser(aj);
+                
+                log.info("Usuario Agregado");
+            }
+        }
+        catch(Exception e)
+        {
+            Notificacion n=new Notificacion();
+            n.setNotificacion("Error del Servidor");
+            n.setTipo(Tipo.Fatal);
+            
+        }
     }
-    
     
     @Path("/")
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response mundo()
     {
-        return Response.ok(mundo.toString()).build();
+        if(mundo==null) iniciarMundo();
+        return Response.ok(mundo).build();
     }
     
-    @Path("/{x}")
+    @Path("/{y}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response mundo(@PathParam("x") int x)
+    public Response mundo(@PathParam("y") int y)
     {
-        return Response.ok(mundo.getMundo().get(x)).build();
-    }
-}
-
-@XmlRootElement
-class Pasillo
-{
-    public List<Casilla> getPasillo() {
-        if(pasillo==null)
-            pasillo= new ArrayList<Casilla>(10);
-        return pasillo;
-    }
-
-    public void setPasillo(List<Casilla> pasillo) {
-        this.pasillo = pasillo;
-    }
-    List<Casilla> pasillo;
-    
-    @Override
-    public String toString()
-    {
-        StringBuilder sb=new StringBuilder();
-        
-        for (Casilla casilla : pasillo) {
-            sb.append("{");
-            sb.append(casilla);
-            sb.append("}");
+        if(mundo==null) iniciarMundo();
+        try
+        {
+            Pasillo p=mundo.getPasillos().get(y);
+            return Response.ok(p).build();
         }
-        
-        return sb.toString();
-    }
-}
-
-@XmlRootElement
-class Segmento
-{
-    List<Pasillo> segmento;
-
-    public List<Pasillo> getSegmento() {
-        if(segmento==null)
-            segmento=new ArrayList<Pasillo>(7);
-        return segmento;
-    }
-
-    public void setSegmento(List<Pasillo> segmento) {
-        this.segmento = segmento;
-    }
-    
-    @Override
-    public String toString()
-    {
-        StringBuilder sb=new StringBuilder();
-        
-        for (Pasillo pasillo : segmento) {
-            sb.append("{");
-            sb.append(pasillo);
-            sb.append("}");
+        catch(Exception ie)
+        {
+            Notificacion n=new Notificacion();
+            n.setNotificacion("Peticion invalida");
+            n.setTipo(Tipo.Fallo);
+            return Response.ok(n).build();
         }
-        
-        return sb.toString();
-    }
-}
-
-@XmlRootElement
-class Mundo
-{
-
-    List<Segmento> mundo;
-    
-    public List<Segmento> getMundo() {
-        if(mundo==null)
-            mundo=new ArrayList<Segmento>(3);
-        return mundo;
-    }
-
-    public void setMundo(List<Segmento> mundo) {
-        this.mundo = mundo;
     }
     
-    @Override
-    public String toString()
+    @Path("/{y}/{x}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response mundo(@PathParam("x") int x,
+                         @PathParam("y") int y)
     {
-        StringBuilder sb=new StringBuilder();
-        
-        for (Segmento segmento : mundo) {
-            sb.append("{");
-            sb.append(segmento);
-            sb.append("}");
+        if(mundo==null) iniciarMundo();
+        try
+        {
+            Casilla c=mundo.getPasillos().get(y).getCasillas().get(x);
+            return Response.ok(c).build();
         }
-        
-        return sb.toString();
+        catch(Exception ie)
+        {
+            Notificacion n=new Notificacion();
+            n.setNotificacion("Peticion invalida");
+            n.setTipo(Tipo.Fallo);
+            return Response.ok(n).build();
+        }
     }
+    
+    @Path("/{y}/{x}/anuncios")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response anunciosMundo(@PathParam("x") int x,
+                         @PathParam("y") int y)
+    {
+        if(mundo==null) iniciarMundo();
+        try
+        {
+            Casilla c=mundo.getPasillos().get(y).getCasillas().get(x);
+            return Response.ok(c).build();
+        }
+        catch(Exception ie)
+        {
+            Notificacion n=new Notificacion();
+            n.setNotificacion("Peticion invalida");
+            n.setTipo(Tipo.Fallo);
+            return Response.ok(n).build();
+        }
+    }
+    
 }

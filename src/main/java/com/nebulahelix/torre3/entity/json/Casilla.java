@@ -7,6 +7,7 @@
 package com.nebulahelix.torre3.entity.json;
 
 //import com.nebulahelix.torre3.service.Pasillo;
+import com.nebulahelix.torre3.entity.Anuncios;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -18,48 +19,39 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Casilla {
-    
-    private ListaMsg mensajes=new ListaMsg();
-    private List<Long> usuarios=new ArrayList<Long>();
-    
-    public List<Long> getUsuarios() {
+
+    public List<avatarJson> getUsuarios() {
         if(usuarios==null)
-            setUsuarios(new ArrayList<Long>());
+        {
+            usuarios=new ArrayList<avatarJson>();
+            //usuarios.add(new avatarJson());
+        }
         return usuarios;
     }
 
-    public void setUsuarios(List<Long> usuarios) {
+    public void setUsuarios(List<avatarJson> usuarios) {
         this.usuarios = usuarios;
     }
+    
+    private List<avatarJson> usuarios;
+    private List<Mensaje> mensajes;
 
-    public ListaMsg getMensajes() {
-        if(mensajes==null)
-            setMensajes(new ListaMsg());
+    public List<Mensaje> getMensajes() {
+        if(mensajes==null) mensajes=new ArrayList<Mensaje>();
         return mensajes;
     }
 
-    public void setMensajes(ListaMsg mensajes) {
+    public void setMensajes(List<Mensaje> mensajes) {
+        
         this.mensajes = mensajes;
     }
-    
-    @Override
-    public String toString()
+
+    public void addUser(avatarJson aj) 
     {
-        StringBuilder sb=new StringBuilder();
-        
-        sb.append("{ usuarios:[");
-        for (Long usuario : usuarios) {
-            sb.append(usuario);
-            sb.append(",");
-        }
-        sb.append("], mensajes : [");
-        
-        for (Mensaje mensaje : mensajes.mensajes) {
-            sb.append(mensaje);
-            sb.append(",");
-        }
-        sb.append("]}");
-        
-        return sb.toString();
+        getUsuarios().add(aj);
+    }
+
+    public void addAnuncio(Mensaje anuncio) {
+        getMensajes().add(anuncio);
     }
 }

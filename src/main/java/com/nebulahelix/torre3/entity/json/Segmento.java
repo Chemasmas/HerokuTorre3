@@ -6,6 +6,10 @@
 
 package com.nebulahelix.torre3.entity.json;
 
+/**
+ *
+ * @author Chemasmas
+ */
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -14,21 +18,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Chemasmas
  */
+
 @XmlRootElement
-public class ListaMsg
-{
-    List<Mensaje> mensajes;
-    
-    public ListaMsg()
-    {
-        mensajes=new ArrayList<Mensaje>();
-    }
-    
-    public List<Mensaje> getMensajes() {
-        return mensajes;
+public class Segmento {
+
+    public List<Pasillo> getPasillos() {
+        if(pasillos==null) pasillos=new ArrayList<Pasillo>();
+        return pasillos;
     }
 
-    public void setMensajes(List<Mensaje> mensajes) {
-        this.mensajes = mensajes;
+    public void setPasillos(List<Pasillo> pasillos) {
+        this.pasillos = pasillos;
     }
+
+    List<Pasillo> pasillos;
 }

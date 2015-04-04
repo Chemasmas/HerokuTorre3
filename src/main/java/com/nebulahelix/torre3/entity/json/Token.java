@@ -15,7 +15,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Token
 {
-    String token;
+    private String token;
+    private Long id;
 
     public String getToken() {
         return token;
@@ -23,6 +24,14 @@ public class Token
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
     
 }

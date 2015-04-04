@@ -6,6 +6,8 @@
 
 package com.nebulahelix.torre3.entity.json;
 
+import java.io.Serializable;
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -13,7 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Chemasmas
  */
 @XmlRootElement
-public class Notificacion implements MessageEntity
+public class Notificacion implements Serializable
 {
     private String Notificacion;
     private Tipo tipo;
@@ -33,4 +35,32 @@ public class Notificacion implements MessageEntity
     public void setTipo(Tipo tipo) {
         this.tipo = tipo;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 23 * hash + Objects.hashCode(this.Notificacion);
+        hash = 23 * hash + Objects.hashCode(this.tipo);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Notificacion other = (Notificacion) obj;
+        if (!Objects.equals(this.Notificacion, other.Notificacion)) {
+            return false;
+        }
+        if (this.tipo != other.tipo) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 }

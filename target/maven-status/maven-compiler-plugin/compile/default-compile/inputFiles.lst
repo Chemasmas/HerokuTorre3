@@ -1,3 +1,4 @@
+C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\service\Torre3.java
 C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\entity\Usuarios.java
 C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\entity\json\ListaMsg.java
 C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\entity\json\Token.java
@@ -6,10 +7,16 @@ C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\t
 C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\entity\json\Mensaje.java
 C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\util\CORSFilter.java
 C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\entity\json\Tipo.java
-C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\util\Encriptado.java
+C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\entity\json\MessageEntity.java
 C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\entity\Avatar.java
+C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\entity\json\Pasillo.java
+C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\util\Encriptado.java
 C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\entity\Skills.java
+C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\entity\json\Casilla.java
+C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\entity\json\MessageEntityFactory.java
+C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\entity\json\Segmento.java
 C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\entity\Proyectos.java
 C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\util\HibernateUtil2.java
 C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\entity\Anuncios.java
+C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\entity\json\Notificacion.java
 C:\Users\Adry\Downloads\Desktop\PI2\HerokuTorre3\src\main\java\com\nebulahelix\torre3\service\Usuario.java

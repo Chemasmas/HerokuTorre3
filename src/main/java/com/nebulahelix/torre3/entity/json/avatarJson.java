@@ -9,11 +9,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class avatarJson
 {
+
+    private long id;
     private int cabeza;
     private int torso;
     private int brazos;
     private int piernas;
+    
+    public long getId() {
+        return id;
+    }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+    
     public int getCabeza() {
         return cabeza;
     }
