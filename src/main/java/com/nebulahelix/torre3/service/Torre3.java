@@ -2,7 +2,9 @@ package com.nebulahelix.torre3.service;
 
 import com.nebulahelix.torre3.entity.Anuncios;
 import com.nebulahelix.torre3.entity.Avatar;
+import com.nebulahelix.torre3.entity.Usuarios;
 import com.nebulahelix.torre3.entity.json.Casilla;
+import com.nebulahelix.torre3.entity.json.ListaMsg;
 import com.nebulahelix.torre3.entity.json.Mensaje;
 import com.nebulahelix.torre3.entity.json.Notificacion;
 import com.nebulahelix.torre3.entity.json.Pasillo;
@@ -10,10 +12,14 @@ import com.nebulahelix.torre3.entity.json.Segmento;
 import com.nebulahelix.torre3.entity.json.Tipo;
 import com.nebulahelix.torre3.entity.json.avatarJson;
 import com.nebulahelix.torre3.util.HibernateUtil2;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.inject.Singleton;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -40,6 +46,18 @@ public class Torre3 {
         m.setTitulo(anuncio.getTitulo());
         m.setDetalle(anuncio.getContenido());
         mundo.getPasillos().get(anuncio.getPiso()).getCasillas().get(anuncio.getBloque()).addAnuncio(m);
+    }
+
+    private static avatarJson getUsr(Long id) {
+        for (Pasillo pasillo : mundo.getPasillos()) {
+            for (Casilla c: pasillo.getCasillas()) {
+                for (avatarJson aj : c.getUsuarios()) {
+                    if(aj.getId()==id)
+                        return aj;
+                }
+            }
+        }
+        return null;
     }
     
     private void iniciarMundo()
@@ -176,7 +194,11 @@ public class Torre3 {
         try
         {
             Casilla c=mundo.getPasillos().get(y).getCasillas().get(x);
-            return Response.ok(c).build();
+            ListaMsg l=new ListaMsg();
+            
+            l.setMensajes(c.getMensajes());
+            
+            return Response.ok(l).build();
         }
         catch(Exception ie)
         {
@@ -187,4 +209,338 @@ public class Torre3 {
         }
     }
     
+    
+    @Path("/{y}/{x}/anuncios/add")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response addAnuncio(@PathParam("x") int x,
+                        @PathParam("y") int y,
+                        @FormParam("usr") String usr,
+                        @FormParam("token") String token,
+                        @DefaultValue("Sin Titulo") @FormParam("titulo") String titulo,
+                        @FormParam("contenido") String contenido)
+    {   
+        log.info("Test validacion de token");
+        Session sesion;
+        try {
+            sesion = HibernateUtil2.getSessionFactory().openSession();
+            Query query = sesion.createQuery("FROM Usuarios where usrName= :name AND token = :token");
+            query.setParameter("name", usr);
+            query.setParameter("token", token);
+
+            log.info(query.getQueryString());
+            List res = query.list();
+            if (!res.isEmpty()) {
+                log.info("Usuario Encontrado");
+                Usuarios u = (Usuarios) res.get(0);
+                
+                Anuncios a=new Anuncios();
+                a.setSeccion(1); // Por el momento esa seria la tercera dimension
+                a.setPiso(y);
+                a.setBloque(x);
+                a.setContenido(contenido);
+                Date hoy=new Date(System.currentTimeMillis());
+                Date limite=new Date(hoy.getYear(),hoy.getMonth(),hoy.getDate()+7);
+                a.setFechaPublicacion(hoy);
+                a.setFechaExpiracion(limite);
+                a.setTitulo(titulo);
+                a.setUsuarios(u);
+                
+                sesion.save(a);
+                Notificacion m = new Notificacion();
+                m.setTipo(Tipo.Exito);
+                m.setNotificacion("Mensaje Agregado");
+                sesion.close();
+
+                return Response.ok(m).build();
+            } else {
+                log.info("Usuario no encontrado");
+                Notificacion m = new Notificacion();
+                m.setTipo(Tipo.Fallo);
+                m.setNotificacion("Esa pareja Token/usuario no es valida");
+
+                return Response.ok(m).build();
+            }
+        } catch (Exception e) {
+            log.severe("Algo salio mal");
+            log.severe(e.getMessage());
+            log.severe("--------------------------------------------------------");
+
+            Notificacion n = new Notificacion();
+            n.setNotificacion("El servicio NO esta disponible<br> revise el status del Servicio<br>");
+            n.setTipo(Tipo.Fatal);
+            return Response.ok(n).build();
+        }
+        
+    }
+
+    @Path("/izq")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response izquierda(@FormParam("usr") String usr,
+                        @FormParam("token") String token)
+    {   
+        log.info("Moviendose");
+        Session sesion;
+        try {
+            sesion = HibernateUtil2.getSessionFactory().openSession();
+            Query query = sesion.createQuery("FROM Usuarios where usrName= :name AND token = :token");
+            query.setParameter("name", usr);
+            query.setParameter("token", token);
+
+            log.info(query.getQueryString());
+            List res = query.list();
+            if (!res.isEmpty()) {
+                log.info("Usuario Encontrado");
+                Usuarios u = (Usuarios) res.get(0);
+                
+                Casilla actual=buscarCasillaUsuario(u);
+                Pasillo pactual=buscarPasillo(u);
+                if(pactual == null)
+                {
+                    log.info("colocar al usuario por inexistencia");
+                    Torre3.addUsr(0, 0, u.getId());
+                    
+                    return Response.ok(mundo.getPasillos().get(0)).build();
+                }
+                else
+                {
+                    int y=mundo.getPasillos().indexOf(pactual);
+                    int x=pactual.getCasillas().indexOf(actual);
+                    avatarJson aj=Torre3.getUsr(u.getId());
+                    actual.getUsuarios().remove(aj);
+                    //Izquierda
+                    Torre3.addUsr(y, x-1, u.getId());
+                    
+                    Pasillo pas=mundo.getPasillos().get(y);
+                    return Response.ok(pas).build();
+                }
+            } else {
+                log.info("Usuario no encontrado");
+                Notificacion m = new Notificacion();
+                m.setTipo(Tipo.Fallo);
+                m.setNotificacion("Esa pareja Token/usuario no es valida");
+
+                return Response.ok(m).build();
+            }
+        } catch (Exception e) {
+            log.severe("Algo salio mal");
+            log.severe(e.getMessage());
+            log.severe("--------------------------------------------------------");
+
+            Notificacion n = new Notificacion();
+            n.setNotificacion("El servicio NO esta disponible<br> revise el status del Servicio<br>");
+            n.setTipo(Tipo.Fatal);
+            return Response.ok(n).build();
+        }    
+    }
+
+    private Casilla buscarCasillaUsuario(Usuarios u) {
+        for (Pasillo pasillo : mundo.getPasillos()) {
+            for (Casilla c: pasillo.getCasillas()) {
+                for (avatarJson aj : c.getUsuarios()) {
+                    if(aj.getId()==u.getId())
+                        return c;
+                }
+            }
+        }
+        
+        return null;
+    }
+
+    private Pasillo buscarPasillo(Usuarios u) {
+        for (Pasillo pasillo : mundo.getPasillos()) {
+            for (Casilla c: pasillo.getCasillas()) {
+                for (avatarJson aj : c.getUsuarios()) {
+                    if(aj.getId()==u.getId())
+                        return pasillo;
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    @Path("/der")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response derecha(@FormParam("usr") String usr,
+                        @FormParam("token") String token)
+    {   
+        log.info("Moviendose");
+        Session sesion;
+        try {
+            sesion = HibernateUtil2.getSessionFactory().openSession();
+            Query query = sesion.createQuery("FROM Usuarios where usrName= :name AND token = :token");
+            query.setParameter("name", usr);
+            query.setParameter("token", token);
+
+            log.info(query.getQueryString());
+            List res = query.list();
+            if (!res.isEmpty()) {
+                log.info("Usuario Encontrado");
+                Usuarios u = (Usuarios) res.get(0);
+                
+                Casilla actual=buscarCasillaUsuario(u);
+                Pasillo pactual=buscarPasillo(u);
+                if(pactual == null)
+                {
+                    log.info("colocar al usuario por inexistencia");
+                    Torre3.addUsr(0, 0, u.getId());
+                    
+                    return Response.ok(mundo.getPasillos().get(0)).build();
+                }
+                else
+                {
+                    int y=mundo.getPasillos().indexOf(pactual);
+                    int x=pactual.getCasillas().indexOf(actual);
+                    avatarJson aj=Torre3.getUsr(u.getId());
+                    actual.getUsuarios().remove(aj);
+                    //Izquierda
+                    Torre3.addUsr(y, x+1, u.getId());
+                    
+                    Pasillo pas=mundo.getPasillos().get(y);
+                    return Response.ok(pas).build();
+                }
+            } else {
+                log.info("Usuario no encontrado");
+                Notificacion m = new Notificacion();
+                m.setTipo(Tipo.Fallo);
+                m.setNotificacion("Esa pareja Token/usuario no es valida");
+
+                return Response.ok(m).build();
+            }
+        } catch (Exception e) {
+            log.severe("Algo salio mal");
+            log.severe(e.getMessage());
+            log.severe("--------------------------------------------------------");
+
+            Notificacion n = new Notificacion();
+            n.setNotificacion("El servicio NO esta disponible<br> revise el status del Servicio<br>");
+            n.setTipo(Tipo.Fatal);
+            return Response.ok(n).build();
+        }    
+    }
+    
+    @Path("/arr")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response arriba(@FormParam("usr") String usr,
+                        @FormParam("token") String token)
+    {   
+        log.info("Moviendose");
+        Session sesion;
+        try {
+            sesion = HibernateUtil2.getSessionFactory().openSession();
+            Query query = sesion.createQuery("FROM Usuarios where usrName= :name AND token = :token");
+            query.setParameter("name", usr);
+            query.setParameter("token", token);
+
+            log.info(query.getQueryString());
+            List res = query.list();
+            if (!res.isEmpty()) {
+                log.info("Usuario Encontrado");
+                Usuarios u = (Usuarios) res.get(0);
+                
+                Casilla actual=buscarCasillaUsuario(u);
+                Pasillo pactual=buscarPasillo(u);
+                if(pactual == null)
+                {
+                    log.info("colocar al usuario por inexistencia");
+                    Torre3.addUsr(0, 0, u.getId());
+                    
+                    return Response.ok(mundo.getPasillos().get(0)).build();
+                }
+                else
+                {
+                    int y=mundo.getPasillos().indexOf(pactual);
+                    int x=pactual.getCasillas().indexOf(actual);
+                    avatarJson aj=Torre3.getUsr(u.getId());
+                    actual.getUsuarios().remove(aj);
+                    //Izquierda
+                    Torre3.addUsr(y+1,x, u.getId());
+                    
+                    Pasillo pas=mundo.getPasillos().get(y+1);
+                    return Response.ok(pas).build();
+                }
+            } else {
+                log.info("Usuario no encontrado");
+                Notificacion m = new Notificacion();
+                m.setTipo(Tipo.Fallo);
+                m.setNotificacion("Esa pareja Token/usuario no es valida");
+
+                return Response.ok(m).build();
+            }
+        } catch (Exception e) {
+            log.severe("Algo salio mal");
+            log.severe(e.getMessage());
+            log.severe("--------------------------------------------------------");
+
+            Notificacion n = new Notificacion();
+            n.setNotificacion("El servicio NO esta disponible<br> revise el status del Servicio<br>");
+            n.setTipo(Tipo.Fatal);
+            return Response.ok(n).build();
+        }    
+    }
+    
+    @Path("/aba")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response abajo(@FormParam("usr") String usr,
+                        @FormParam("token") String token)
+    {   
+        log.info("Moviendose");
+        Session sesion;
+        try {
+            sesion = HibernateUtil2.getSessionFactory().openSession();
+            Query query = sesion.createQuery("FROM Usuarios where usrName= :name AND token = :token");
+            query.setParameter("name", usr);
+            query.setParameter("token", token);
+
+            log.info(query.getQueryString());
+            List res = query.list();
+            if (!res.isEmpty()) {
+                log.info("Usuario Encontrado");
+                Usuarios u = (Usuarios) res.get(0);
+                
+                Casilla actual=buscarCasillaUsuario(u);
+                Pasillo pactual=buscarPasillo(u);
+                if(pactual == null)
+                {
+                    log.info("colocar al usuario por inexistencia");
+                    Torre3.addUsr(0, 0, u.getId());
+                    
+                    return Response.ok(mundo.getPasillos().get(0)).build();
+                }
+                else
+                {
+                    int y=mundo.getPasillos().indexOf(pactual);
+                    int x=pactual.getCasillas().indexOf(actual);
+                    avatarJson aj=Torre3.getUsr(u.getId());
+                    actual.getUsuarios().remove(aj);
+                    
+                    Torre3.addUsr(y-1, x, u.getId());
+                    
+                    Pasillo pas=mundo.getPasillos().get(y-1);
+                    return Response.ok(pas).build();
+                }
+            } else {
+                log.info("Usuario no encontrado");
+                Notificacion m = new Notificacion();
+                m.setTipo(Tipo.Fallo);
+                m.setNotificacion("Esa pareja Token/usuario no es valida");
+
+                return Response.ok(m).build();
+            }
+        } catch (Exception e) {
+            log.severe("Algo salio mal");
+            log.severe(e.getMessage());
+            log.severe("--------------------------------------------------------");
+
+            Notificacion n = new Notificacion();
+            n.setNotificacion("El servicio NO esta disponible<br> revise el status del Servicio<br>");
+            n.setTipo(Tipo.Fatal);
+            return Response.ok(n).build();
+        }    
+    }
 }
